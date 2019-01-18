@@ -8,3 +8,6 @@ docs/dedication.md
 docs/index.md
 docs/paradigmsofartificialintelligenceprogramming.md
 docs/tableofcontents.md
+
+# compiled lisp code
+*.fasl
