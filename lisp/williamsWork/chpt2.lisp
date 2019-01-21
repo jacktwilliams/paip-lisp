@@ -65,3 +65,37 @@
       (if (terminalp phrase)
           (list phrase)
           (generate (random-elt (rewrites phrase))))))
+
+;;2.3 trivial grammar for a subset of bash
+(defparameter *bash-grammar-simple*
+  '((command -> (program options arguments output))
+    (program -> ls mv cp)
+    (options -> -a -l -x -f)
+    (arguments -> one-arg two-args)
+    (one-arg -> ./ ./dev ./Downloads ./dev/ ./Downloads/)
+    (two-args -> (one-arg one-arg))
+    (output -> &>log.txt ()))) ; either redirect stdout and stderr or dont redirect output
+
+;; 2.4 Make a high-order function cross-product and define combine-all in terms of cross-product
+
+;; here is the original combine-all
+(defun combine-all (xlist ylist)
+  (mappend #'(lambda (y)
+               (mapcar #'(lambda (x) (append x y)) xlist))
+           ylist))
+
+;;start with obvious solution
+(defun cross-product (fn xlist ylist)
+  (mappend #'(lambda (y)
+               (mapcar #'(lambda (x) (funcall fn x y)) xlist))
+           ylist))
+
+(defun new-combine-all (xlist ylist)
+  (cross-product #'append xlist ylist))
+
+;;test cross-product with a different function than append
+(defun repeat-time (xlist ylist)
+  (let ((reps (first ylist)))
+    (cond ((= reps 0) '())
+          ((= reps 1) xlist)
+          ((> reps 1) (repeat-time (append xlist xlist) (list (- reps 1)))))))
